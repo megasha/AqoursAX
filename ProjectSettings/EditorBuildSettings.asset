@@ -4,4 +4,10 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Yousoroad.unity
+    guid: 4cc3ffb3682295d48a05f6c59c2f64d8
+  - enabled: 1
+    path: Assets/Scenes/Kananrail.unity
+    guid: 87908d05cc029fe468e0f2cb6d1efc97

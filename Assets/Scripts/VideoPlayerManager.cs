@@ -3,15 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Video;
 using UnityEngine.UI;
+using System;
 
 public class VideoPlayerManager : MonoBehaviour {
 
     //Audio
     private VideoPlayer videoPlayer;
     private AudioSource audioSource;
-    public Text text;
+    public Text playText;
+    public Text timeText;
 
     private bool vidPrepared = false;
+
+    void Awake()
+    {
+        //Application.targetFrameRate = 60;
+    }
 
 	// Use this for initialization
 	void Start () {
@@ -34,11 +41,23 @@ public class VideoPlayerManager : MonoBehaviour {
                 videoPlayer.Play();
         }
 
+
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            videoPlayer.time -= 0.30f;
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            videoPlayer.time += 0.30f;
+        }
+
         //UI Text updater
         if (videoPlayer.isPlaying)
-            text.text = "Video: Playing";
+            playText.text = "Video: Playing";
         else
-            text.text = "Video: Paused";
+            playText.text = "Video: Paused";
+
+        timeText.text = "Time: " + Math.Round(videoPlayer.time,2) + " s";
 	}
 
     IEnumerator playVideo()
@@ -68,10 +87,10 @@ public class VideoPlayerManager : MonoBehaviour {
         Debug.Log("Done Preparing Video");
 
         //Play Video
-        videoPlayer.Play();
+        //videoPlayer.Play();
 
         //Play Sound
-        audioSource.Play();
+        //audioSource.Play();
 
         vidPrepared = true;
         Debug.Log("Exiting playVideo()");

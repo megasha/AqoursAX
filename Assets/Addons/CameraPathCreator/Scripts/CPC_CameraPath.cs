@@ -54,6 +54,7 @@ public class CPC_Point
 
 public class CPC_CameraPath : MonoBehaviour
 {
+    static int curNumCam = 0;
 
     public bool useMainCamera = true;
     public Camera selectedCamera;
@@ -67,6 +68,8 @@ public class CPC_CameraPath : MonoBehaviour
     public bool alwaysShow = true;
     public CPC_EAfterLoop afterLoop = CPC_EAfterLoop.Continue;
 
+    public int camNum;
+
     private int currentWaypointIndex;
     private float currentTimeInWaypoint;
     private float timePerSegment;
@@ -74,6 +77,9 @@ public class CPC_CameraPath : MonoBehaviour
     private bool paused = false;
     private bool playing = false;
     private bool pathStarted = false;
+    private int maxCams = 0;
+    private bool awakening = false;
+    private bool finishedPath = false;
 
     void Start ()
     {
@@ -101,23 +107,57 @@ public class CPC_CameraPath : MonoBehaviour
             if (index.curveTypePosition == CPC_ECurveType.Linear) index.positionCurve = AnimationCurve.Linear(0, 0, 1, 1);
         }
 
-        if (playOnAwake)
+        maxCams = GameObject.FindGameObjectsWithTag("CameraPath").Length;
+
+        if (playOnAwake && camNum == curNumCam)
             PlayPath(playOnAwakeTime);
     }
 
     void Update()
     {
+        //Debug.Log(curNumCam);
         //Camera controlls
         if (Input.GetKeyDown(KeyCode.L))
         {
-            if (IsPaused())
-                ResumePath();
-            else
-                PausePath();
+            if (camNum == curNumCam)
+            {
+                if (IsPaused())
+                    ResumePath();
+                else
+                    PausePath();
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.K))
+        {
+            if (camNum == curNumCam)
+                PlayPath(playOnAwakeTime);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            Debug.Log("Detect");
+            if (camNum == curNumCam)
+            {
+                if (curNumCam +1 < maxCams )
+                    curNumCam++;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            if (camNum == curNumCam)
+            {
+                if (curNumCam - 1 >= 0)
+                curNumCam--;
+            }
+        }
+
+        if (playOnAwake && camNum == curNumCam && !awakening)
+        {
+            awakening = true;
             PlayPath(playOnAwakeTime);
+        }
 
 
     }
@@ -144,6 +184,9 @@ public class CPC_CameraPath : MonoBehaviour
         playing = false;
         paused = false;
         StopAllCoroutines();
+
+        if (curNumCam + 1 < maxCams && finishedPath)
+            curNumCam++;
     }
 
     /// <summary>
@@ -242,6 +285,7 @@ public class CPC_CameraPath : MonoBehaviour
 
     IEnumerator FollowPath(float time)
     {
+        //Debug.Log(camNum);
         UpdateTimeInSeconds(time);
         currentWaypointIndex = 0;
         while (currentWaypointIndex < points.Count)
@@ -266,12 +310,20 @@ public class CPC_CameraPath : MonoBehaviour
                     else
                         selectedCamera.transform.rotation = Quaternion.LookRotation((target.transform.position - selectedCamera.transform.position).normalized);
                 }
+
+                if (camNum != curNumCam)
+                {
+                    StopPath();
+                }
+
                 yield return null;
             }
             ++currentWaypointIndex;
             if (currentWaypointIndex == points.Count - 1 && !looped) break;
             if (currentWaypointIndex == points.Count && afterLoop == CPC_EAfterLoop.Continue) currentWaypointIndex = 0;
         }
+
+        finishedPath = true;
         StopPath();
     }
 
