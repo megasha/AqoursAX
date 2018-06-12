@@ -135,8 +135,8 @@ public class Kananrail : MonoBehaviour {
     private int tempTimeCounter = 0;
     private float tempTimeMark = 0.0f;
     private int numRow = 0;
-    private float timeComparisonKananrail = 14.75f; // TODO
-    private float timeComparisonTogether = 22.3f; // TODO
+    private float timeComparisonKananrail = 14.3f; // TODO
+    private float timeComparisonTogether = 24.5f; // TODO
     int togetherCounter = 0;
 
     void Start () {
@@ -569,12 +569,12 @@ public class Kananrail : MonoBehaviour {
         //6 seconds of raising lights
         //85 rows total - 6pit - 45orch - 21 - (3) - (11)
         //0.07s per row
-        if (videoPlayer.time > 14.65f) // 1.5
+        if (videoPlayer.time > 14.20f) // 1.5
         {
             action = Action.Kananrail;
         }
         
-        if (videoPlayer.time > 22.3f)
+        if (videoPlayer.time > 24.5f) // 22.3f
         {
             action = Action.Together;
         }
